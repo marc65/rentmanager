@@ -22,6 +22,10 @@ public class Client {
 
     }
 
+    public Client(int clientId) {
+        this.id = clientId;
+    }
+
 
     public long getId() {
         return id;

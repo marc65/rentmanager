@@ -1,37 +1,46 @@
 package com.epf.rentmanager.Main;
 
+import com.epf.rentmanager.exception.ContraintException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.model.Client;
 import com.epf.rentmanager.model.Vehicle;
 import com.epf.rentmanager.service.ClientService;
 import com.epf.rentmanager.service.ReservationService;
 import com.epf.rentmanager.service.VehicleService;
-import com.epf.rentmanager.dao.ReservationDao;
-import com.epf.rentmanager.exception.DaoException;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.Scanner;
 
-
+@Component
 public class Test {
+    private VehicleService vehicleService;
+    private ClientService clientService;
+    private ReservationService reservationService;
+
+    public Test(VehicleService vehicleService, ClientService clientService, ReservationService reservationService){
+        this.vehicleService = vehicleService;
+        this.clientService = clientService;
+        this.reservationService = reservationService;
+    }
 
     public void afficherClients(){
         try {
-            System.out.println(ClientService.getInstance().findAll());
+            System.out.println(this.clientService.findAll());
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
     }
     public void afficherVehicules(){
         try {
-            System.out.println(VehicleService.getInstance().findAll());
+            System.out.println(this.vehicleService.findAll());
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
     }
     public void afficherReservations(){
         try {
-            System.out.println(ReservationService.getInstance().findAll());
+            System.out.println(this.reservationService.findAll());
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
@@ -42,7 +51,7 @@ public class Test {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Entrez une id client : ");
             String identre = scanner.nextLine();
-            System.out.println(ClientService.getInstance().findById(Long.parseLong(identre)));
+            System.out.println(this.clientService.findById(Long.parseLong(identre)));
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
@@ -54,7 +63,7 @@ public class Test {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Entrez une id vehicule : ");
             String identre = scanner.nextLine();
-            System.out.println(VehicleService.getInstance().findById(Long.parseLong(identre)));
+            System.out.println(this.vehicleService.findById(Long.parseLong(identre)));
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
@@ -65,7 +74,7 @@ public class Test {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Entrez une id client pour trouver ses reservations : ");
             String identre = scanner.nextLine();
-            System.out.println(ReservationService.getInstance().findResaByClientId(Long.parseLong(identre)));
+            System.out.println(this.reservationService.findResaByClientId(Long.parseLong(identre)));
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
@@ -75,7 +84,7 @@ public class Test {
             Scanner scanner = new Scanner(System.in);
             System.out.print("Entrez une id vehicule pour trouver ses reservations : ");
             String identre = scanner.nextLine();
-            System.out.println(ReservationService.getInstance().findResaByVehicleId(Long.parseLong(identre)));
+            System.out.println(this.reservationService.findResaByVehicleId(Long.parseLong(identre)));
         } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
@@ -84,7 +93,6 @@ public class Test {
 
     public void ajouterClient() {
         try{
-            ClientService clientService = ClientService.getInstance();
             Scanner scanner = new Scanner(System.in);
 
             System.out.print("Nom: ");
@@ -112,12 +120,14 @@ public class Test {
 
         }catch (ServiceException e) {
             throw new RuntimeException(e);
+        } catch (ContraintException e) {
+            System.out.println(e.getMessage());
         }
     }
 
     public void compterClient() {
     try{
-    System.out.println(ClientService.getInstance().Count());
+    System.out.println(this.clientService.Count());
     } catch (Exception e) {
         throw new RuntimeException(e);
     }
@@ -125,7 +135,7 @@ public class Test {
 
     public void compterVehicle() {
         try{
-            System.out.println(VehicleService.getInstance().Count());
+            System.out.println(this.vehicleService.Count());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -133,7 +143,6 @@ public class Test {
 
     public void ajouterVehicle() {
         try{
-            VehicleService vehicleService = VehicleService.getInstance();
             Scanner scanner = new Scanner(System.in);
 
             System.out.print("Constructeur :");
@@ -162,8 +171,23 @@ public class Test {
 
     public void compterReservation() {
         try{
-            System.out.println(ReservationService.getInstance().Count());
+            System.out.println(this.reservationService.Count());
         } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deleteClient() {
+        try {
+            Scanner scanner = new Scanner(System.in);
+
+            System.out.print("ID du client à supprimer :");
+            long id_to_delete = Long.parseLong(scanner.nextLine());
+            Client client = new Client();
+            client.setId(id_to_delete);
+            this.clientService.delete(client);
+            System.out.println("Le client a été supprimé avec succès");
+        } catch (ServiceException e) {
             throw new RuntimeException(e);
         }
     }

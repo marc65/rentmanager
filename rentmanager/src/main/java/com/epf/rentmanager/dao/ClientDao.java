@@ -8,27 +8,23 @@ import java.util.List;
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.model.Client;
 import com.epf.rentmanager.persistence.ConnectionManager;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ClientDao {
 	
-	private static ClientDao instance = null;
-	private ClientDao() {}
-	public static ClientDao getInstance() {
-		if(instance == null) {
-			instance = new ClientDao();
-		}
-		return instance;
-	}
+	public ClientDao() {}
+
 	
 	private static final String CREATE_CLIENT_QUERY = "INSERT INTO Client(nom, prenom, email, naissance) VALUES(?, ?, ?, ?);";
 	private static final String DELETE_CLIENT_QUERY = "DELETE FROM Client WHERE id=?;";
 	private static final String FIND_CLIENT_QUERY = "SELECT nom, prenom, email, naissance FROM Client WHERE id=?;";
 	private static final String FIND_CLIENTS_QUERY = "SELECT id, nom, prenom, email, naissance FROM Client;";
-	
+	private static final String VERIFY_EMAIL = "SELECT * FROM Client WHERE email = ?";
+
 	public long create(Client client) throws DaoException {
 		List<Client> clients = new ArrayList<Client>();
-		try {
-			Connection connection = ConnectionManager.getConnection();
+		try(Connection connection = ConnectionManager.getConnection()) {
 			PreparedStatement preparedStatement = connection.prepareStatement(CREATE_CLIENT_QUERY);
 
 			preparedStatement.setString(1, client.getLastName());
@@ -36,9 +32,10 @@ public class ClientDao {
 			preparedStatement.setString(3, client.getEmail());
 			preparedStatement.setDate(4, Date.valueOf(client.getBirthDate()));
 
+
+
 			long newID = preparedStatement.executeUpdate();
 
-			connection.close();
 
 			return	newID;
 
@@ -47,16 +44,31 @@ public class ClientDao {
 			throw new DaoException();
 		}
 	}
+
+
 	
 	public long delete(Client client) throws DaoException {
-		return 0;
+		try(Connection connection = ConnectionManager.getConnection()) {
+			PreparedStatement preparedStatement = connection.prepareStatement(DELETE_CLIENT_QUERY);//, Statement.RETURN_GENERATED_KEYS);
+			preparedStatement.setInt(1, (int) client.getId());
+			preparedStatement.executeUpdate();
+
+			/*ResultSet rs = preparedStatement.getGeneratedKeys();
+			long oldID = 0;
+			if(rs.next()){
+				oldID = rs.getInt(1);
+			}return oldID;*/
+
+			return 0;
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public Client findById(long id) throws DaoException {
 		Client client = new Client();
 
-		try {
-			Connection connection = ConnectionManager.getConnection();
+		try (Connection connection = ConnectionManager.getConnection()){
 
 			PreparedStatement preparedStatement = connection.prepareStatement(FIND_CLIENT_QUERY);
 			preparedStatement.setInt(1, (int) id);
@@ -82,8 +94,7 @@ public class ClientDao {
 	public List<Client> findAll() throws DaoException {
 		List<Client> clients = new ArrayList<Client>();
 
-		try {
-			Connection connection = ConnectionManager.getConnection();
+		try(Connection connection = ConnectionManager.getConnection()) {
 
 			Statement statement = connection.createStatement();
 
@@ -98,7 +109,6 @@ public class ClientDao {
 
 				clients.add(new Client(id, nom, prenom, email, date));
 			}
-			connection.close();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -109,11 +119,8 @@ public class ClientDao {
 
 
 	public int Count () throws DaoException {
-		//4
-		// List<Client> clients = new ArrayList<Client>();
+		try(Connection connection = ConnectionManager.getConnection()) {
 
-		try {
-			Connection connection = ConnectionManager.getConnection();
 			Statement statement = connection.createStatement();
 			ResultSet resultSet = statement.executeQuery("SELECT COUNT(*) FROM Client");
 
@@ -122,9 +129,24 @@ public class ClientDao {
 			} else {
 				return 0;
 			}
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	public boolean checkIfEmailExist (String Email) throws DaoException{
+		boolean exists = false;
+		try(Connection connection = ConnectionManager.getConnection()) {
+
+			PreparedStatement stmt = connection.prepareStatement(VERIFY_EMAIL);
+			stmt.setString(1, Email);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				exists = true;
+			}
 
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 		}
+		return exists;
 	}
 }

@@ -10,17 +10,12 @@ import com.epf.rentmanager.model.Client;
 import com.epf.rentmanager.model.Reservation;
 import com.epf.rentmanager.model.Vehicle;
 import com.epf.rentmanager.persistence.ConnectionManager;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class ReservationDao {
 
-	private static ReservationDao instance = null;
-	private ReservationDao() {}
-	public static ReservationDao getInstance() {
-		if(instance == null) {
-			instance = new ReservationDao();
-		}
-		return instance;
-	}
+	public ReservationDao() {}
 	
 	private static final String CREATE_RESERVATION_QUERY = "INSERT INTO Reservation(client_id, vehicle_id, debut, fin) VALUES(?, ?, ?, ?);";
 	private static final String DELETE_RESERVATION_QUERY = "DELETE FROM Reservation WHERE id=?;";
@@ -55,8 +50,9 @@ public class ReservationDao {
 				LocalDate debut = rs.getDate("debut").toLocalDate();
 				LocalDate fin = rs.getDate("fin").toLocalDate();
 
-				Vehicle vehicle = VehicleDao.getInstance().findById(vehicleId);
-				Client client = ClientDao.getInstance().findById(clientId);
+				Client client = new Client();
+				Vehicle vehicle = new Vehicle();
+
 
 				reservation.add(new Reservation(id, client, vehicle,debut, fin));
 			}
@@ -85,8 +81,8 @@ public class ReservationDao {
 
 				LocalDate debut = rs.getDate("debut").toLocalDate();
 				LocalDate fin = rs.getDate("fin").toLocalDate();
-				Vehicle vehicle = VehicleDao.getInstance().findById(vehicleId);
-				Client client = ClientDao.getInstance().findById(clientId);
+				Client client = new Client();
+				Vehicle vehicle = new Vehicle();
 
 				reservation.add(new Reservation(id, client, vehicle,debut, fin));
 
@@ -118,10 +114,9 @@ public class ReservationDao {
 				LocalDate debut = rs.getDate("debut").toLocalDate();
 				LocalDate fin = rs.getDate("fin").toLocalDate();
 
-				Client client = ClientDao.getInstance().findById(clientId);
-				Vehicle vehicle = VehicleDao.getInstance().findById(vehicleId);
+				Client client = new Client(clientId);
+				Vehicle vehicle = new Vehicle(vehicleId);
 
-				//vehicles.add(new Vehicle(id, constructeur, modele, nb_places));
 				reservations.add(new Reservation(id,client, vehicle, debut, fin));
 			}
 			connection.close();

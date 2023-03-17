@@ -48,6 +48,35 @@
 			<artifactId>jstl</artifactId>
 			<version>1.2</version>
 		</dependency>
+		<dependency>
+
+			<groupId>org.springframework</groupId>
+
+			<artifactId>spring-core</artifactId>
+
+			<version>5.1.6.RELEASE</version>
+
+		</dependency>
+		<dependency>
+
+			<groupId>org.springframework</groupId>
+
+			<artifactId>spring-context</artifactId>
+
+			<version>5.1.6.RELEASE</version>
+
+		</dependency>
+		<dependency>
+
+			<groupId>org.springframework</groupId>
+
+			<artifactId>spring-webmvc</artifactId>
+
+			<version>5.1.6.RELEASE</version>
+
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
@@ -58,6 +87,11 @@
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.1.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-war-plugin</artifactId>
+					<version>3.3.1</version>
 				</plugin>
 				<!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
 				<plugin>

@@ -1,9 +1,12 @@
 package com.epf.rentmanager.servlet;
 
 import com.epf.rentmanager.exception.DaoException;
+import com.epf.rentmanager.model.Client;
 import com.epf.rentmanager.service.ClientService;
 import com.epf.rentmanager.service.VehicleService;
 import com.epf.rentmanager.service.ReservationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 
 import java.io.IOException;
@@ -17,13 +20,19 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/home")
 public class HomeServlet extends HttpServlet {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	private ClientService clientService = ClientService.getInstance();
-	private VehicleService vehicleService = VehicleService.getInstance();
-	private ReservationService reservationService = ReservationService.getInstance();
+	@Autowired
+	private ClientService clientService = this.clientService;
+	@Autowired
+	private VehicleService vehicleService = this.vehicleService;
+	@Autowired
+	private ReservationService reservationService = this.reservationService;
+
+	@Override
+	public void init() throws ServletException {
+		super.init();
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+	}
 
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)

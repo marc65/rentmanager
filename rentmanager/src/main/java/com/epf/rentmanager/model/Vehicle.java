@@ -16,6 +16,10 @@ public class Vehicle {
 
     }
 
+    public Vehicle(int vehicleId) {
+        this.id = vehicleId;
+    }
+
     public long getId() {
         return id;
     }

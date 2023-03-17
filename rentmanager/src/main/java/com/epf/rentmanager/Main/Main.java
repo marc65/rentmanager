@@ -1,22 +1,29 @@
 package com.epf.rentmanager.Main;
 
+import com.epf.rentmanager.dao.ClientDao;
 import com.epf.rentmanager.dao.ReservationDao;
+import com.epf.rentmanager.dao.VehicleDao;
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.service.ClientService;
 import com.epf.rentmanager.service.ReservationService;
 import com.epf.rentmanager.service.VehicleService;
-import java.util.Scanner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import java.util.Scanner;
+@Component
 public class Main {
 
     public static boolean quitter = false;
+    @Autowired
+    static Test test ;
 
     public static void main(String[] args) {
-        //createCLient();
-        //createVehicle();
-        //createReservation();
+
         do {
+            test = new Test(new VehicleService(new VehicleDao()), new ClientService(new ClientDao()), new ReservationService(new ReservationDao(), new VehicleDao(), new ClientDao()));
+
             Scanner scanner = new Scanner(System.in);
             System.out.println("Que voulez vous faire ? : ");
             System.out.println("0-    Quitter");
@@ -32,10 +39,11 @@ public class Main {
             System.out.println("10-    Compter Vehicle");
             System.out.println("11-    Ajouter Vehicle");
             System.out.println("12-    Compter Reservation");
+            System.out.println("13-    Supprimer Client");
+
 
 
             String choix = scanner.nextLine();
-            Test test = new Test();
 
             switch (choix) {
                 case "1":
@@ -76,13 +84,11 @@ public class Main {
                     break;
                 case "12":
                     test.compterReservation();
+                case "13":
+                    test.deleteClient();
                 default:
                     System.out.println("Erreur, paramètre non correct");
             }
         }while(!quitter);
     }
 }
-
-
-
-
