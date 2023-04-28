@@ -2,6 +2,7 @@ package com.epf.rentmanager.dao;
 
 import java.sql.*;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,8 @@ public class ClientDao {
 	private static final String FIND_CLIENT_QUERY = "SELECT nom, prenom, email, naissance FROM Client WHERE id=?;";
 	private static final String FIND_CLIENTS_QUERY = "SELECT id, nom, prenom, email, naissance FROM Client;";
 	private static final String VERIFY_EMAIL = "SELECT * FROM Client WHERE email = ?";
+	private static final String EDIT_CLIENTS_QUERY = "UPDATE Client SET nom = ?, prenom = ?, email = ?, naissance = ? WHERE id = ?;";
+
 
 	public long create(Client client) throws DaoException {
 		List<Client> clients = new ArrayList<Client>();
@@ -31,8 +34,6 @@ public class ClientDao {
 			preparedStatement.setString(2, client.getFirstName());
 			preparedStatement.setString(3, client.getEmail());
 			preparedStatement.setDate(4, Date.valueOf(client.getBirthDate()));
-
-
 
 			long newID = preparedStatement.executeUpdate();
 
@@ -136,7 +137,6 @@ public class ClientDao {
 	public boolean checkIfEmailExist (String Email) throws DaoException{
 		boolean exists = false;
 		try(Connection connection = ConnectionManager.getConnection()) {
-
 			PreparedStatement stmt = connection.prepareStatement(VERIFY_EMAIL);
 			stmt.setString(1, Email);
 			ResultSet rs = stmt.executeQuery();
@@ -149,4 +149,23 @@ public class ClientDao {
 		}
 		return exists;
 	}
+
+	public long editClient(Client client) throws DaoException {
+		long n = 0;
+		try(Connection connection = ConnectionManager.getConnection()) {
+			PreparedStatement pstmt = connection.prepareStatement(EDIT_CLIENTS_QUERY);
+
+			pstmt.setString(1,client.getFirstName());
+			pstmt.setString(2,client.getLastName());
+			pstmt.setString(3,client.getEmail());
+			pstmt.setString(4,client.getBirthDate().toString());
+			pstmt.setInt(5, (int) client.getId());
+
+			n = pstmt.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return n;
+	}
+
 }

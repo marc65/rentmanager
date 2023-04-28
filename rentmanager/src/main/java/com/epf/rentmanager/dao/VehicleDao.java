@@ -22,6 +22,8 @@ public class VehicleDao {
     private static final String DELETE_VEHICLE_QUERY = "DELETE FROM Vehicle WHERE id=?;";
     private static final String FIND_VEHICLE_QUERY = "SELECT id, constructeur, nb_places, model FROM Vehicle WHERE id=?;";
     private static final String FIND_VEHICLES_QUERY = "SELECT id, constructeur, nb_places, model FROM Vehicle;";
+    private static final String EDIT_VEHICLES_QUERY = "UPDATE Vehicle SET constructeur = ?, nb_places = ?, model = ? WHERE id = ?;";
+
 
     public long create(Vehicle vehicle) throws DaoException {
         List<Vehicle> vehicles = new ArrayList<Vehicle>();
@@ -46,7 +48,14 @@ public class VehicleDao {
     }
 
     public long delete(Vehicle vehicle) throws DaoException {
-        return 0;
+        try(Connection connection = ConnectionManager.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(DELETE_VEHICLE_QUERY);//, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setInt(1, (int) vehicle.getId());
+            preparedStatement.executeUpdate();
+            return 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Vehicle findById(long id) throws DaoException {
@@ -123,6 +132,22 @@ public class VehicleDao {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+    public long editVehicle(Vehicle vehicle) throws DaoException {
+        long n = 0;
+        try(Connection connection = ConnectionManager.getConnection()) {
+            PreparedStatement pstmt = connection.prepareStatement(EDIT_VEHICLES_QUERY);
+
+            pstmt.setString(1,vehicle.getConstructor());
+            pstmt.setString(2, String.valueOf(vehicle.getNb_places()));
+            pstmt.setString(3,vehicle.getModel());
+            pstmt.setInt(4, (int) vehicle.getId());
+
+            n = pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DaoException();
+        }
+        return n;
     }
 
 }

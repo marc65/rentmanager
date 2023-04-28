@@ -6,6 +6,7 @@
 <div class="wrapper">
 
     <%@ include file="/WEB-INF/views/common/header.jsp" %>
+    <%@ page pageEncoding="UTF-8" %>
     <!-- Left side column. contains the logo and sidebar -->
     <%@ include file="/WEB-INF/views/common/sidebar.jsp" %>
 
@@ -25,7 +26,7 @@
                     <!-- Horizontal Form -->
                     <div class="box">
                         <!-- form start -->
-                        <form class="form-horizontal" method="post" action="/users/create">
+                        <form class="form-horizontal" method="post">
                             <div class="box-body">
                                 <div class="form-group">
                                     <label for="last_name" class="col-sm-2 control-label">Nom</label>
@@ -48,10 +49,16 @@
                                         <input type="email" class="form-control" id="email" name="email" placeholder="Email">
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                <label for="birthDate" class="col-sm-2 control-label">Date de Naissance</label>
+                                <div class="col-sm-10">
+                                <input type="date" class="form-control" id="birthDate" name="birthDate" placeholder="birthDate">
+                                </div>
+                                </div>
                             </div>
                             <!-- /.box-body -->
                             <div class="box-footer">
-                                <button type="submit" class="btn btn-info pull-right">Ajouter</button>
+                                <button type="submit" class="btn btn-info pull-right" >Ajouter</button>
                             </div>
                             <!-- /.box-footer -->
                         </form>

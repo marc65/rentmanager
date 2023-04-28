@@ -191,4 +191,18 @@ public class Test {
             throw new RuntimeException(e);
         }
     }
+
+    public void editClient() {
+        try{
+            Scanner scanner = new Scanner(System.in);
+            System.out.print("ID du client à modifier :");
+            long id_to_edit = Long.parseLong(scanner.nextLine());
+            Client client = new Client();
+            client.setId(id_to_edit);
+            this.clientService.editClient(client);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

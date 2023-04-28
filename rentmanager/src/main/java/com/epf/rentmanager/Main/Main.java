@@ -22,7 +22,7 @@ public class Main {
     public static void main(String[] args) {
 
         do {
-            test = new Test(new VehicleService(new VehicleDao()), new ClientService(new ClientDao()), new ReservationService(new ReservationDao(), new VehicleDao(), new ClientDao()));
+            test = new Test(new VehicleService(new VehicleDao(), new ReservationDao()), new ClientService(new ClientDao(), new ReservationDao()), new ReservationService(new ReservationDao(), new VehicleDao(), new ClientDao()));
 
             Scanner scanner = new Scanner(System.in);
             System.out.println("Que voulez vous faire ? : ");
@@ -36,10 +36,11 @@ public class Main {
             System.out.println("7-    Chercher reservation par id vehicule");
             System.out.println("8-    Ajouter client");
             System.out.println("9-    Compter client");
-            System.out.println("10-    Compter Vehicle");
-            System.out.println("11-    Ajouter Vehicle");
-            System.out.println("12-    Compter Reservation");
-            System.out.println("13-    Supprimer Client");
+            System.out.println("10-   Compter Vehicle");
+            System.out.println("11-   Ajouter Vehicle");
+            System.out.println("12-   Compter Reservation");
+            System.out.println("13-   Supprimer Client");
+            System.out.println("14-   Edit Client");
 
 
 
@@ -86,6 +87,8 @@ public class Main {
                     test.compterReservation();
                 case "13":
                     test.deleteClient();
+                case "14":
+                    test.editClient();
                 default:
                     System.out.println("Erreur, paramètre non correct");
             }

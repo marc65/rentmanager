@@ -8,6 +8,7 @@ import com.epf.rentmanager.exception.ContraintException;
 import com.epf.rentmanager.exception.DaoException;
 import com.epf.rentmanager.exception.ServiceException;
 import com.epf.rentmanager.dao.ClientDao;
+import com.epf.rentmanager.dao.ReservationDao;
 import com.epf.rentmanager.model.Client;
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,12 @@ import org.springframework.stereotype.Service;
 public class ClientService {
 
 	private final ClientDao clientDao;
+	private ReservationDao reservationDao;
 
-	public ClientService(ClientDao clientDao){
+
+	public ClientService(ClientDao clientDao, ReservationDao reservationDao) {
 		this.clientDao = clientDao;
+		this.reservationDao = reservationDao;
 	}
 
 
@@ -33,27 +37,26 @@ public class ClientService {
 			int nom_length = client.getLastName().length();
 			int prenom_length = client.getFirstName().length();
 
-			if ( age < 18){
+			if (age < 18) {
 				throw new ContraintException("TROP JEUNE");
 			} else if (this.clientDao.checkIfEmailExist(client.getEmail())) {
 				throw new ContraintException("Email déjà existant");
-			} else if (nom_length <3){
+			} else if (nom_length < 3) {
 				throw new ContraintException("Nom trop court");
-			}
-			else if (prenom_length <3){
+			} else if (prenom_length < 3) {
 				throw new ContraintException("Prenom trop court");
+			} else {
+				return this.clientDao.create(client);
 			}
-			else{
-				return this.clientDao.create(client);}
-		} catch (DaoException e){
+		} catch (DaoException e) {
 			throw new ServiceException();
 		}
 	}
 
 	public Client findById(long id) throws ServiceException {
 		try {
-			return this.clientDao.findById((int)id);
-		}catch (DaoException e){
+			return this.clientDao.findById((int) id);
+		} catch (DaoException e) {
 			throw new ServiceException();
 		}
 	}
@@ -61,13 +64,13 @@ public class ClientService {
 	public List<Client> findAll() throws ServiceException {
 		try {
 			return this.clientDao.findAll();
-		}catch (DaoException e){
+		} catch (DaoException e) {
 			throw new ServiceException();
 		}
 	}
 
-	public int Count() throws  DaoException {
-		try{
+	public int Count() throws DaoException {
+		try {
 			return this.clientDao.Count();
 		} catch (DaoException e) {
 			throw new RuntimeException(e);
@@ -76,11 +79,39 @@ public class ClientService {
 
 	public long delete(Client client) throws ServiceException {
 		try {
+			this.reservationDao.deleteByClientId(client);
 			return this.clientDao.delete(client);
 		} catch (DaoException e) {
 			e.printStackTrace();
 			throw new ServiceException();
 		}
 	}
-}
 
+	public long editClient(Client client) throws ServiceException, ContraintException {
+		try {
+			client.setLastName(client.getLastName().toUpperCase());
+
+			LocalDate currentDate = LocalDate.now();
+			LocalDate birthDate = client.getBirthDate();
+			Period diff = Period.between(birthDate, currentDate);
+			int age = diff.getYears();
+
+			int nom_length = client.getLastName().length();
+			int prenom_length = client.getFirstName().length();
+
+			if (age < 18) {
+				throw new ContraintException("TROP JEUNE");
+			} else if (this.clientDao.checkIfEmailExist(client.getEmail())) {
+				throw new ContraintException("Email déjà existant");
+			} else if (nom_length < 3) {
+				throw new ContraintException("Nom trop court");
+			} else if (prenom_length < 3) {
+				throw new ContraintException("Prenom trop court");
+			} else {
+				return this.clientDao.editClient(client);
+			}
+		} catch (DaoException e) {
+			throw new ServiceException();
+		}
+	}
+}
